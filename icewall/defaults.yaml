@@ -1,0 +1,26 @@
+allow_icmp:
+  - 0  # echo reply
+  - 3  # destination unreachable
+  - 4  # source quench
+  - 8  # echo request
+  - 11 # TTL exceeded
+
+# FIXME: ip6 not managed yet.
+# allow_ip_family:
+#  - ipv4
+# ipv6 currently disabled because
+#  - ipv6
+
+policy:
+  ipv4:
+    INPUT: ACCEPT
+    OUTPUT: ACCEPT
+    FORWARD: DROP
+# FIXME: ip6 not managed yet.
+  ipv6:
+    INPUT: ACCEPT
+    OUTPUT: ACCEPT
+    FORWARD: DROP
+
+prefer-reject: True
+rules: {}
