@@ -1,6 +1,9 @@
 # icewall-formula
 An alternate iptables formula for Salt.
 
+*Note: Works on 2015.5.3 and earlier, will be updated soon for
+post-2015.8.0. See issue #6.*
+
 This is intended to do basic firewall management for an endpoint. It
 will not do complex NATing or similar. It does handle both ipv4 and
 ipv6.
