@@ -87,11 +87,12 @@ ipv6:
 
 {#-   Now apply the rules. #}
 {%-   for protocol in protocols %}
-{%-     set sources = valid_ips|join(",") %}
-{%-     set dports = ports|join(",") %}
-{%-     if sources and dports %}
--A INPUT -p {{ protocol }} -s {{ sources }} -m multiport --dports {{ dports }} -j ACCEPT -m comment --comment {{ rule }}
-{%-     endif %}
+{%-     for ip in valid_ips %}
+{%-       set dports = ports|join(",") %}
+{%-       if ip and dports %}
+-A INPUT -p {{ protocol }} -s {{ ip }} -m multiport --dports {{ dports }} -j ACCEPT -m comment --comment {{ rule }}
+{%-       endif %}
+{%- 	endfor %}
 {%-   endfor %}
 {%- endfor %}
 
