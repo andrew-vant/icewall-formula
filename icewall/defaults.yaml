@@ -22,3 +22,5 @@ policy:
 
 prefer-reject: True
 rules: {}
+ipsets: {}
+portsets: {}
