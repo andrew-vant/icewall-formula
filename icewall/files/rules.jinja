@@ -70,7 +70,7 @@ ipv6:
 {#-   Now collect a list of ports allowed by this rule. #}
 {%-   set ports = settings.get('ports', []) %}
 {%-   if 'portset' in settings %}
-{%-     do ports.extend(icewall.portsets[portset]) %}
+{%-     do ports.extend(icewall.portsets[settings.portset]) %}
 {%-   endif %}
 
 {#-   If the rule specifies a particular protocol, note that too. I'd like to
