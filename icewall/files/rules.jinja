@@ -96,7 +96,7 @@ ipv6:
 {%-       if ip and dports %}
 -A INPUT -p {{ protocol }} -s {{ ip }} -m multiport --dports {{ dports }} -j ACCEPT -m comment --comment {{ rule }}
 {%-       endif %}
-{%- 	endfor %}
+{%-     endfor %}
 {%-   endfor %}
 {%- endfor %}
 
