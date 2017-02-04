@@ -1,6 +1,14 @@
 {#- Please note that iptables-restore is annoyingly whitespace-sensitive and
     whitespace control is mandatory in this file. #}
 
+{#- Some useful aliases #}
+{%- set pget = salt['pillar.get'] %}
+{%- set mget = salt['mine.get'] %}
+{%- set icewall = pget("icewall") %}
+{%- import_yaml slspath + '/defaults.yaml' as defaults %}
+{%- set icewall = pget('icewall', defaults, merge=True) %}
+
+
 {#- Most, but not all, rules work the same for iptables and ip6tables. For the
     exceptions, the variable 'ps' contains a dictionary of the appropriate options.
     This file expects to be provided with the variable 'family' as context, which
@@ -27,8 +35,7 @@ ipv6:
 
 {#- set policy #}
 {%- for chain in ["INPUT","FORWARD","OUTPUT"] %}
-{%- set policy = salt['defaults.get']("policy:{}".format(chain)) %}
-:{{ chain }} {{ policy }} [0:0]
+:{{ chain }} {{ icewall.policy[chain] }} [0:0]
 {%- endfor %}
 
 {#- Allow established connections and connections from localhost #}
@@ -36,8 +43,7 @@ ipv6:
 -A INPUT -m state --state RELATED,ESTABLISHED -j ACCEPT
 
 {#- set up ICMP #}
-{%- set allowed_types = salt['defaults.get']('allow_icmp:{}'.format(family)) %}
-{%- for type in allowed_types %}
+{%- for type in icewall.allow_icmp[family] %}
 -A INPUT -p {{ ps.icmp_protocol }} --{{ ps.icmp_type_option }} {{ type }} -j ACCEPT
 {%- endfor %}
 
@@ -49,15 +55,14 @@ ipv6:
     a list from each option given, concatenate them, and then iterate over the
     result to apply. #}
 
-{%- for rule, settings in salt['defaults.get']('rules', {}).items() %}
+{%- for rule, settings in icewall.rules.items() %}
 {#-   Collect a list of ips allowed by this rule, as above. #}
 {%-   set source_ips = settings.get('ips', []) %}
 {%-   if "ipset" in settings %}
-{%-     set ips = salt['defaults.get']('ipsets:' + settings.ipset, []) %}
-{%-     do source_ips.extend(ips) %}
+{%-     do source_ips.extend(icewall.ipsets[ipset]) %}
 {%-   endif %}
 {%-   if "minions" in settings %}
-{%-     for minion in salt['mine.get'](settings.minions, 'network.interfaces').values() %}
+{%-     for minion in mget(settings.minions, 'network.interfaces').values() %}
 {%-       do source_ips.append(minion['eth0'][ps.iface_inet][0]['address']) %}
 {%-     endfor %}
 {%-   endif %}
@@ -65,8 +70,7 @@ ipv6:
 {#-   Now collect a list of ports allowed by this rule. #}
 {%-   set ports = settings.get('ports', []) %}
 {%-   if 'portset' in settings %}
-{%-     set portset = salt['defaults.get']('portsets:' + settings.portset, []) %}
-{%-     do ports.extend(portset) %}
+{%-     do ports.extend(icewall.portsets[portset]) %}
 {%-   endif %}
 
 {#-   If the rule specifies a particular protocol, note that too. I'd like to
@@ -99,7 +103,7 @@ ipv6:
 {#- We're done applying rules. Anything else should be refused. It's polite
     to reject rather than drop when possible. #}
 
-{%- if salt['defaults.get']('prefer-reject') %}
+{%- if icewall.prefer-reject %}
 -A INPUT -p tcp -j REJECT --reject-with tcp-reset
 -A INPUT -j REJECT --reject-with {{ ps.rejection }}
 {%- endif %}
