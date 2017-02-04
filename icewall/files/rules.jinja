@@ -103,7 +103,7 @@ ipv6:
 {#- We're done applying rules. Anything else should be refused. It's polite
     to reject rather than drop when possible. #}
 
-{%- if icewall.prefer-reject %}
+{%- if icewall.prefer_reject %}
 -A INPUT -p tcp -j REJECT --reject-with tcp-reset
 -A INPUT -j REJECT --reject-with {{ ps.rejection }}
 {%- endif %}

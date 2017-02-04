@@ -20,7 +20,7 @@ policy:
   OUTPUT: ACCEPT
   FORWARD: DROP
 
-prefer-reject: True
+prefer_reject: True
 rules: {}
 ipsets: {}
 portsets: {}
