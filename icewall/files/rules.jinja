@@ -59,7 +59,7 @@ ipv6:
 {#-   Collect a list of ips allowed by this rule, as above. #}
 {%-   set source_ips = settings.get('ips', []) %}
 {%-   if "ipset" in settings %}
-{%-     do source_ips.extend(icewall.ipsets[ipset]) %}
+{%-     do source_ips.extend(icewall.ipsets[settings.ipset]) %}
 {%-   endif %}
 {%-   if "minions" in settings %}
 {%-     for minion in mget(settings.minions, 'network.interfaces').values() %}
