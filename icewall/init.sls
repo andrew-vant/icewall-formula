@@ -8,7 +8,7 @@ icewall-ipv4:
     - source: salt://icewall/files/rules.jinja
     - template: jinja
     - context:
-        '__sls__': icewall # Bug workaround, salt issue #19856
+        slspath: {{ slspath }}
         family: ipv4
   cmd.wait:
     - name: iptables-restore rules.v4
@@ -27,7 +27,7 @@ icewall-ipv6:
     - source: salt://icewall/files/rules.jinja
     - template: jinja
     - context:
-        '__sls__': icewall
+        slspath: {{ slspath }}
         family: ipv6
   cmd.wait:
     - name: ip6tables-restore rules.v6
